@@ -16,9 +16,13 @@ import (
 
 // @title Go CRUD API
 // @version 1.0
-// @description CRUD API using Go and MySQL
+// @description CRUD API using Go and MySQL with JWT authentication
 // @host localhost:8080
 // @BasePath /
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
 
 func main() {
 	config.ConnectDB()

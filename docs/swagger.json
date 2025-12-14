@@ -1,7 +1,7 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "CRUD API using Go and MySQL",
+        "description": "CRUD API using Go and MySQL with JWT authentication",
         "title": "Go CRUD API",
         "contact": {},
         "version": "1.0"
@@ -9,28 +9,41 @@
     "host": "localhost:8080",
     "basePath": "/",
     "paths": {
-        "/users": {
-            "get": {
-                "description": "Retrieve all users",
+        "/login": {
+            "post": {
+                "description": "Generate JWT token",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Users"
+                    "Auth"
                 ],
-                "summary": "Get all users",
+                "summary": "Login user",
+                "parameters": [
+                    {
+                        "description": "Login credentials",
+                        "name": "login",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.LoginRequest"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.User"
-                            }
+                            "$ref": "#/definitions/handlers.LoginResponse"
                         }
                     }
                 }
-            },
+            }
+        },
+        "/users": {
             "post": {
                 "description": "Create a user with name, email, age",
                 "consumes": [
@@ -164,6 +177,25 @@
         }
     },
     "definitions": {
+        "handlers.LoginRequest": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.LoginResponse": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
         "models.User": {
             "type": "object",
             "properties": {
@@ -192,6 +224,13 @@
                     "example": "2025-12-14T10:12:30Z"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }

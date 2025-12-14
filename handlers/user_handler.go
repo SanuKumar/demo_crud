@@ -46,7 +46,9 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 // @Tags Users
 // @Produce json
 // @Success 200 {array} models.User
+// @Security BearerAuth
 // @Router /users [get]
+
 func GetUsers(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
