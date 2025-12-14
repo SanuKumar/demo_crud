@@ -3,11 +3,12 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 
-	"demo_crud/database"
+	"demo_crud/config"
 	"demo_crud/routes"
 
-	_ "demo_crud/docs" // swagger docs
+	_ "demo_crud/docs"
 
 	"github.com/gorilla/mux"
 	httpSwagger "github.com/swaggo/http-swagger"
@@ -20,7 +21,12 @@ import (
 // @BasePath /
 
 func main() {
-	database.ConnectDB()
+	config.ConnectDB()
+
+	port := os.Getenv("SERVER_PORT")
+	if port == "" {
+		port = "8080" // default
+	}
 
 	router := mux.NewRouter()
 
@@ -29,6 +35,6 @@ func main() {
 
 	routes.RegisterRoutes(router)
 
-	log.Println("Server running on http://localhost:8080")
-	log.Fatal(http.ListenAndServe(":8080", router))
+	log.Printf("Server running on http://localhost:%s\n", port)
+	log.Fatal(http.ListenAndServe(":"+port, router))
 }

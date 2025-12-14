@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"demo_crud/database"
+	"demo_crud/config"
 	"demo_crud/models"
 
 	"github.com/gorilla/mux"
@@ -26,7 +26,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	var user models.User
 	json.NewDecoder(r.Body).Decode(&user)
 
-	result, err := database.DB.Exec("INSERT INTO users (name, email, age) VALUES (?, ?, ?)",
+	result, err := config.DB.Exec("INSERT INTO users (name, email, age) VALUES (?, ?, ?)",
 		user.Name, user.Email, user.Age)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -34,7 +34,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	id, _ := result.LastInsertId()
-	database.DB.QueryRow("SELECT id, name, email, age, created_at, updated_at FROM users WHERE id=?",
+	config.DB.QueryRow("SELECT id, name, email, age, created_at, updated_at FROM users WHERE id=?",
 		id).Scan(&user.ID, &user.Name, &user.Email, &user.Age, &user.CreatedAt, &user.UpdatedAt)
 
 	json.NewEncoder(w).Encode(user)
@@ -50,7 +50,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 func GetUsers(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	rows, err := database.DB.Query("SELECT id, name, email, age, created_at, updated_at FROM users")
+	rows, err := config.DB.Query("SELECT id, name, email, age, created_at, updated_at FROM users")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -83,7 +83,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(params["id"])
 
 	var user models.User
-	err := database.DB.QueryRow("SELECT id, name, email, age, created_at, updated_at FROM users WHERE id=?",
+	err := config.DB.QueryRow("SELECT id, name, email, age, created_at, updated_at FROM users WHERE id=?",
 		id).Scan(&user.ID, &user.Name, &user.Email, &user.Age, &user.CreatedAt, &user.UpdatedAt)
 	if err != nil {
 		http.Error(w, "User not found", http.StatusNotFound)
@@ -112,14 +112,14 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	var user models.User
 	json.NewDecoder(r.Body).Decode(&user)
 
-	_, err := database.DB.Exec("UPDATE users SET name=?, email=?, age=? WHERE id=?",
+	_, err := config.DB.Exec("UPDATE users SET name=?, email=?, age=? WHERE id=?",
 		user.Name, user.Email, user.Age, id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	database.DB.QueryRow("SELECT id, name, email, age, created_at, updated_at FROM users WHERE id=?",
+	config.DB.QueryRow("SELECT id, name, email, age, created_at, updated_at FROM users WHERE id=?",
 		id).Scan(&user.ID, &user.Name, &user.Email, &user.Age, &user.CreatedAt, &user.UpdatedAt)
 
 	json.NewEncoder(w).Encode(user)
@@ -136,7 +136,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	id, _ := strconv.Atoi(params["id"])
 
-	_, err := database.DB.Exec("DELETE FROM users WHERE id=?", id)
+	_, err := config.DB.Exec("DELETE FROM users WHERE id=?", id)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

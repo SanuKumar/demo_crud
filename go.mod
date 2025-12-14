@@ -5,6 +5,7 @@ go 1.24.5
 require (
 	github.com/go-sql-driver/mysql v1.9.3
 	github.com/gorilla/mux v1.8.1
+	github.com/joho/godotenv v1.5.1
 	github.com/swaggo/http-swagger v1.3.4
 	github.com/swaggo/swag v1.16.6
 )
